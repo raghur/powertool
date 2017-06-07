@@ -5,6 +5,11 @@ import logging
 import coloredlogs
 
 logger = logging.getLogger(__name__)
+
+@click.command()
+def list():
+    click.echo("in list")
+
 @click.command()
 @click.option("-b", "--broadcast", default="192.168.1.255",
               help="machine ip's subnet")
@@ -32,13 +37,16 @@ def sleep(target):
 
 
 @click.group()
-@click.option('-l', '--log', default="NOTSET", type=click.Choice(["INFO", "DEBUG",
+@click.option('-c', '--config', type=click.Path(), default='~/.powertool')
+@click.option('-l', '--log', default="DEBUG", type=click.Choice(["INFO", "DEBUG",
                                                "WARNING", "ERROR",
                                                "CRITICAL", "NOTSET"]))
-def main(log):
+def main(log, config):
     """Console script for powertool"""
-    if log != 'NOTSET':
+    if log and log != 'NOTSET':
         coloredlogs.install(level=log)
+    click.echo(log)
+    logger.debug('filename %s', config)
     logger.debug("Replace this message by putting your code into "
                "powertool.cli.main")
     logger.debug("See click documentation at http://click.pocoo.org/")
@@ -46,6 +54,7 @@ def main(log):
 main.add_command(wol)
 main.add_command(register)
 main.add_command(sleep)
+main.add_command(list)
 
 if __name__ == "__main__":
-    main()
+    main(None)
