@@ -7,6 +7,7 @@ import re
 import logging
 import click
 import coloredlogs
+from wakeonlan import wol
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ def save_config(ctx, log, config):
     if not ctx:
         return
     logger.debug("In result callback: %s "% config)
-    file = ctx.obj["config-file"]
+    file = os.path.expanduser(config)
     logger.debug("Config updated - writing to file")
     with open(file, "w") as fh:
         json.dump(ctx.obj["config"], fh)
@@ -42,9 +43,14 @@ def main(ctx, log, config):
         machines = json.load(fh)
     # logger.debug(ctx, ctx.obj)
         ctx.obj = {}
-        ctx.obj['config-file'] = file
         ctx.obj['config'] = machines
-        ctx.obj["updated"] = False
+        hostmap = {}
+        for mac, machine in machines.items():
+            if 'hostname' in machine:
+                hostmap[machine['hostname']] = mac
+        ctx.obj['hostmapping'] = hostmap
+        logger.debug("Built hostmap: %s" % hostmap)
+
     click.echo("Replace this message by putting your code into "
                "powertool.cli.main")
     logger.debug("See click documentation at http://click.pocoo.org/")
@@ -92,7 +98,6 @@ def register(ctx, broadcast, host, mac):
     click.echo(mac)
     machines = ctx.obj["config"]
     machines[mac] = {"hostname": host, "broadcast":broadcast}
-    ctx.obj["updated"] = True
     click.echo("In register")
     return ctx
 
@@ -117,11 +122,23 @@ def rm(ctx, host, mac):
 @main.command()
 @click.argument('target', nargs=-1)
 @click.pass_context
-def wol(ctx, target):
+def wake(ctx, target):
     click.echo(ctx.obj["config"])
     click.echo("In wake ")
+    config = ctx.obj["config"]
+    hostmap = ctx.obj['hostmapping']
     for t in target:
-        click.echo(t)
+        logger.debug("Waking host: %s" % t)
+        if t not in hostmap:
+            logger.warn("No hostname found for %s" % t)
+            continue
+        mac = hostmap[t]
+        logger.debug("sending magic packet to %s:%s ip:%s" % (t,
+                     mac,
+                     config[mac]['broadcast']))
+        wol.send_magic_packet(mac, ip_address=config[mac]['broadcast'])
+
+
 
 @main.command()
 @click.argument('target', nargs=-1)
