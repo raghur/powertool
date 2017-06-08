@@ -7,6 +7,7 @@ import re
 import logging
 import click
 import coloredlogs
+from subprocess import Popen
 from wakeonlan import wol
 
 logger = logging.getLogger(__name__)
@@ -66,9 +67,10 @@ def createIfNotExists(file):
 @click.pass_context
 def list(ctx):
     config = ctx.obj["config"]
-    [print("%s\t%s\t%s" % (config[k]["hostname"],
-                           k,
-                           config[k]["broadcast"])) for k in config.keys()]
+    [print("%s@%s\t%s\t%s" % (config[k]["username"],
+                              config[k]["hostname"],
+                              k,
+                              config[k]["broadcast"])) for k in config.keys()]
 
 def validate_broadcast(ctx, param, value):
     logger.debug("In validate_broadcast: %s" % value)
@@ -84,20 +86,30 @@ def validate_mac(ctx, param, value):
         raise click.BadParameter("broadcast needs to be a mac address")
     return value
 
+def validate_userhost(ctx, param, value):
+    if value.find("@") == -1:
+        raise click.BadArgumentUsage("host must be in user@host form")
+    u, h = value.split('@')
+    if u and h:
+        return (u,h)
+    else:
+        raise click.BadArgumentUsage("host must be in user@host form")
 @main.command()
 @click.option("-b", "--broadcast",
               default="192.168.1.255",
               callback=validate_broadcast,
               help="machine ip's subnet")
-@click.option("-h", "--host", help="hostname of your server")
 @click.argument("mac", nargs=1, callback=validate_mac)
+@click.argument("host", nargs=1, callback=validate_userhost)
 @click.pass_context
 def register(ctx, broadcast, host, mac):
     click.echo(broadcast)
     click.echo(host)
     click.echo(mac)
     machines = ctx.obj["config"]
-    machines[mac] = {"hostname": host, "broadcast":broadcast}
+    machines[mac] = {"hostname": host[1],
+                     "username": host[0],
+                     "broadcast":broadcast}
     click.echo("In register")
     return ctx
 
@@ -142,8 +154,18 @@ def wake(ctx, target):
 
 @main.command()
 @click.argument('target', nargs=-1)
-def sleep(target):
+@click.pass_context
+def sleep(ctx, target):
     click.echo("In sleep ")
+    hostmap = ctx.obj["hostmapping"]
+    config = ctx.obj["config"]
     for t in target:
-        click.echo(t)
+        if t not in hostmap:
+            logger.warn("No hostname found for %s" % t)
+            continue
+        mac = hostmap[t]
+        machine = config[mac]
+        prg = ["ssh", "%s@%s" % (machine['username'], t), "sudo pm-suspend"]
+        logger.debug("calling:  %s"% " ".join(prg))
+        Popen(prg)
 
