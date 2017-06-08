@@ -33,7 +33,7 @@ setup(
                  'powertool'},
     entry_points={
         'console_scripts': [
-            'powertool=powertool.cli:main'
+            'powertool=powertool.cli:cli'
         ]
     },
     include_package_data=True,
