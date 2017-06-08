@@ -1,28 +1,50 @@
 # -*- coding: utf-8 -*-
 
-import click
-import logging
-import coloredlogs
 from  io import open
 import json
 import os
+import re
+import logging
+import click
+import coloredlogs
 
 logger = logging.getLogger(__name__)
 
-@click.group()
+def save_config(ctx, log, config):
+    logger.debug("In result callback: %s "% ctx)
+    if not ctx:
+        return
+    logger.debug("In result callback: %s "% config)
+    file = ctx.obj["config-file"]
+    logger.debug("Config updated - writing to file")
+    with open(file, "w") as fh:
+        json.dump(ctx.obj["config"], fh)
+
+@click.group(result_callback=save_config)
 @click.option('-c', '--config', type=click.Path(), default='~/.powertool')
-@click.option('-l', '--log', default="DEBUG", type=click.Choice(["INFO", "DEBUG",
-                                               "WARNING", "ERROR",
-                                               "CRITICAL", "NOTSET"]))
+@click.option('-l', '--log', default="DEBUG", type=click.Choice([
+    "INFO", "DEBUG",
+    "WARNING", "ERROR",
+    "CRITICAL", "NOTSET"]))
 @click.pass_context
 def main(ctx, log, config):
+    # print("in main")
+    # print(ctx)
+    # print(log)
+    # print(config)
     """Console script for powertool"""
     if log and log != 'NOTSET':
         coloredlogs.install(level=log)
     click.echo(log)
     logger.debug('filename %s', config)
+    file=createIfNotExists(config)
+    with open(file, "r") as fh:
+        machines = json.load(fh)
     # logger.debug(ctx, ctx.obj)
-    ctx.obj['config'] = config;
+        ctx.obj = {}
+        ctx.obj['config-file'] = file
+        ctx.obj['config'] = machines
+        ctx.obj["updated"] = False
     click.echo("Replace this message by putting your code into "
                "powertool.cli.main")
     logger.debug("See click documentation at http://click.pocoo.org/")
@@ -37,31 +59,60 @@ def createIfNotExists(file):
 @main.command()
 @click.pass_context
 def list(ctx):
-    file = createIfNotExists(ctx.obj["config"])
-    with open(file, "r") as fh:
-        config = json.load(fh)
-        [print("%s\t%s\t%s" % (config[k]["hostname"],
-                               k,
-                               config[k]["broadcast"])) for k in config.keys()]
+    config = ctx.obj["config"]
+    [print("%s\t%s\t%s" % (config[k]["hostname"],
+                           k,
+                           config[k]["broadcast"])) for k in config.keys()]
+
+def validate_broadcast(ctx, param, value):
+    logger.debug("In validate_broadcast: %s" % value)
+    if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",value):
+        raise click.BadParameter("broadcast needs to be an IP address")
+    return value
+
+def validate_mac(ctx, param, value):
+    if not value:
+        return
+    logger.debug("In validate_mac: %s" % value)
+    if not re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}",value):
+        raise click.BadParameter("broadcast needs to be a mac address")
+    return value
 
 @main.command()
-@click.option("-b", "--broadcast", default="192.168.1.255",
+@click.option("-b", "--broadcast",
+              default="192.168.1.255",
+              callback=validate_broadcast,
               help="machine ip's subnet")
 @click.option("-h", "--host", help="hostname of your server")
-@click.argument("mac", nargs=1)
+@click.argument("mac", nargs=1, callback=validate_mac)
 @click.pass_context
 def register(ctx, broadcast, host, mac):
     click.echo(broadcast)
     click.echo(host)
     click.echo(mac)
-    file=createIfNotExists(ctx.obj["config"])
-    logger.debug(file);
-    with open(file, "r") as fh:
-        machines = json.load(fh)
-    with open(file, "w") as fh:
-        machines[mac] = {"hostname": host, "broadcast":broadcast}
-        json.dump(machines, fh)
+    machines = ctx.obj["config"]
+    machines[mac] = {"hostname": host, "broadcast":broadcast}
+    ctx.obj["updated"] = True
     click.echo("In register")
+    return ctx
+
+@main.command()
+@click.option("-h", "--host", help="hostname of your server")
+@click.option("-m", "--mac", callback=validate_mac)
+@click.pass_context
+def rm(ctx, host, mac):
+    config = ctx.obj["config"]
+    if mac:
+        config.pop(mac, None)
+    else:
+        keysToRemove=[]
+        for key in config.keys():
+            if host == config[key]["hostname"]:
+                keysToRemove += [key]
+        logger.debug("Keys to remove: %s", keysToRemove)
+        for key in keysToRemove:
+            config.pop(key)
+    return ctx
 
 @main.command()
 @click.argument('target', nargs=-1)
@@ -79,6 +130,3 @@ def sleep(target):
     for t in target:
         click.echo(t)
 
-
-def cli():
-    main({})
