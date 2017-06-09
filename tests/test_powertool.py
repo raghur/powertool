@@ -57,9 +57,9 @@ def test_list_should_return_machines(jsonload):
     }
     runner = CliRunner()
     result = runner.invoke(cli.main, ["list"])
-    assert 'user@host' in result.output
-    assert 'aa:bb:cc:dd:ee:ff' in result.output
-    assert '192.168.1.1' in result.output
+    assert u'user@host' in result.output
+    assert u'aa:bb:cc:dd:ee:ff' in result.output
+    assert u'192.168.1.1' in result.output
 
 
 @patch('json.load')
