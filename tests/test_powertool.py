@@ -17,7 +17,7 @@ from powertool import powertool
 from powertool import cli
 try:
     from unittest.mock import patch, mock_open
-except NameError:
+except ImportError:
     from mock import patch, mock_open
 
 
