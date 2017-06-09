@@ -17,12 +17,13 @@ logger = logging.getLogger(__name__)
 def save_config(ctx, log, config):
     logger.debug("In result callback: %s " % ctx)
     if not ctx:
-        return
+        return 0
     logger.debug("In result callback: %s " % config)
     file = os.path.expanduser(config)
     logger.debug("Config updated - writing to file")
     with open(file, "w") as fh:
         json.dump(ctx.obj["config"], fh)
+    return 0
 
 
 @click.group(result_callback=save_config)
@@ -33,17 +34,12 @@ def save_config(ctx, log, config):
     "CRITICAL"]))
 @click.pass_context
 def main(ctx, log, config):
-    # print("in main")
-    # print(ctx)
-    # print(log)
-    # print(config)
     """Console script for powertool"""
     coloredlogs.install(level=log)
     logger.debug('filename %s', config)
     file = createIfNotExists(config)
     with open(file, "r") as fh:
         machines = json.load(fh)
-    # logger.debug(ctx, ctx.obj)
         ctx.obj = {}
         ctx.obj['config'] = machines
         hostmap = {}
@@ -66,11 +62,11 @@ def createIfNotExists(file):
 @click.pass_context
 def list(ctx):
     config = ctx.obj["config"]
-    [print("%s@%-20s\t%s\t%s" % (config[k]["username"],
-                                 config[k]["hostname"],
-                                 k,
-                                 config[k]["broadcast"]))
-     for k in config.keys()]
+    for mac, machine in config.items():
+        click.echo("%s@%-20s\t%s\t%s" % (machine["username"],
+                                         machine["hostname"],
+                                         mac,
+                                         machine["broadcast"]))
 
 
 def validate_broadcast(ctx, param, value):
