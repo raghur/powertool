@@ -15,7 +15,10 @@ from click.testing import CliRunner
 
 from powertool import powertool
 from powertool import cli
-from unittest.mock import Mock, MagicMock, patch, mock_open
+try:
+    from unittest.mock import patch, mock_open
+except NameError:
+    from mock import patch, mock_open
 
 
 @pytest.fixture
