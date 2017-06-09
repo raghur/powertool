@@ -24,10 +24,10 @@ def save_config(ctx, log, config):
 
 @click.group(result_callback=save_config)
 @click.option('-c', '--config', type=click.Path(), default='~/.powertool')
-@click.option('-l', '--log', default="DEBUG", type=click.Choice([
+@click.option('-l', '--log', default="CRITICAL", type=click.Choice([
     "INFO", "DEBUG",
     "WARNING", "ERROR",
-    "CRITICAL", "NOTSET"]))
+    "CRITICAL"]))
 @click.pass_context
 def main(ctx, log, config):
     # print("in main")
@@ -35,9 +35,7 @@ def main(ctx, log, config):
     # print(log)
     # print(config)
     """Console script for powertool"""
-    if log and log != 'NOTSET':
-        coloredlogs.install(level=log)
-    click.echo(log)
+    coloredlogs.install(level=log)
     logger.debug('filename %s', config)
     file=createIfNotExists(config)
     with open(file, "r") as fh:
@@ -52,9 +50,6 @@ def main(ctx, log, config):
         ctx.obj['hostmapping'] = hostmap
         logger.debug("Built hostmap: %s" % hostmap)
 
-    click.echo("Replace this message by putting your code into "
-               "powertool.cli.main")
-    logger.debug("See click documentation at http://click.pocoo.org/")
 
 def createIfNotExists(file):
     file = os.path.expanduser(file)
@@ -67,7 +62,7 @@ def createIfNotExists(file):
 @click.pass_context
 def list(ctx):
     config = ctx.obj["config"]
-    [print("%s@%s\t%s\t%s" % (config[k]["username"],
+    [print("%s@%-20s\t%s\t%s" % (config[k]["username"],
                               config[k]["hostname"],
                               k,
                               config[k]["broadcast"])) for k in config.keys()]
@@ -103,14 +98,10 @@ def validate_userhost(ctx, param, value):
 @click.argument("host", nargs=1, callback=validate_userhost)
 @click.pass_context
 def register(ctx, broadcast, host, mac):
-    click.echo(broadcast)
-    click.echo(host)
-    click.echo(mac)
     machines = ctx.obj["config"]
     machines[mac] = {"hostname": host[1],
                      "username": host[0],
                      "broadcast":broadcast}
-    click.echo("In register")
     return ctx
 
 @main.command()
@@ -135,8 +126,7 @@ def rm(ctx, host, mac):
 @click.argument('target', nargs=-1)
 @click.pass_context
 def wake(ctx, target):
-    click.echo(ctx.obj["config"])
-    click.echo("In wake ")
+    logger.debug("In wake ")
     config = ctx.obj["config"]
     hostmap = ctx.obj['hostmapping']
     for t in target:
@@ -156,7 +146,7 @@ def wake(ctx, target):
 @click.argument('target', nargs=-1)
 @click.pass_context
 def sleep(ctx, target):
-    click.echo("In sleep ")
+    logger.debug("In sleep ")
     hostmap = ctx.obj["hostmapping"]
     config = ctx.obj["config"]
     for t in target:
