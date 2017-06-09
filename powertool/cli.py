@@ -63,7 +63,7 @@ def createIfNotExists(file):
 def list(ctx):
     config = ctx.obj["config"]
     for mac, machine in config.items():
-        click.echo("%s@%-20s\t%s\t%s" % (machine["username"],
+        click.echo(u"%s@%-20s\t%s\t%s" % (machine["username"],
                                          machine["hostname"],
                                          mac,
                                          machine["broadcast"]))
