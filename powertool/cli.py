@@ -69,7 +69,7 @@ def list(ctx):
 
 def validate_broadcast(ctx, param, value):
     logger.debug("In validate_broadcast: %s" % value)
-    if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",value):
+    if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", value):
         raise click.BadParameter("broadcast needs to be an IP address")
     return value
 
