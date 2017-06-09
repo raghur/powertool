@@ -15,7 +15,7 @@ from click.testing import CliRunner
 
 from powertool import powertool
 from powertool import cli
-from mock import Mock, MagicMock, patch, mock_open
+from unittest.mock import Mock, MagicMock, patch, mock_open
 
 
 @pytest.fixture
