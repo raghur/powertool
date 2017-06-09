@@ -33,7 +33,7 @@ Features
 Wake on lan (WOL) 
 -----------------
 
-wake up feature uses WOL magic packet. Since mac addresses are hard to remember/use, this tool lets you wake up or suspend machines
+Wake up feature uses WOL magic packet. Since mac addresses are hard to remember/use, this tool lets you wake up or suspend machines
 by their name or IP.
 
 1. First register your machines ::
@@ -55,12 +55,14 @@ Sleep/suspend
 
 Sleep/suspend feature has quite a few dependencies
 
-- you should have passwordless ssh to the remote host. There are a lot of guides on the internet on how to set this up - 
-  like this one http://www.linuxproblem.org/art_9.html. Verify that it works by running `ssh user@host` - you 
-  should not be prompted for a password.
-- You should have `pm-utils` package on your remote machine http://manpages.ubuntu.com/manpages/precise/man8/pm-action.8.html
-- Your user should be able to run `sudo pm-suspend` without being prompted for password. To set this up, login to the 
-  remote machine and do the following::
+- you should have password-less ssh to the remote host. There are a lot of
+  guides on the internet on how to set this up - like this one
+  http://www.linuxproblem.org/art_9.html. Verify that it works by running `ssh
+  user@host` - you should not be prompted for a password.
+- You should have `pm-utils` package on your remote machine
+  http://manpages.ubuntu.com/manpages/precise/man8/pm-action.8.html
+- Your user should be able to run `sudo pm-suspend` without being prompted for
+  password. To set this up, login to the remote machine and do the following::
 
         sudo visudo
         # add the following - where user is your username on the remote machine
