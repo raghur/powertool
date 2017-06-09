@@ -49,10 +49,10 @@ def test_command_line_interface():
 @patch('json.load')
 def test_list_should_return_machines(jsonload):
     jsonload.return_value = {
-        "aa:bb:cc:dd:ee:ff" : {
-            "hostname" : "host",
-            "username" : "user",
-            "broadcast" : "192.168.1.1"
+        u"aa:bb:cc:dd:ee:ff" : {
+            u"hostname" : u"host",
+            u"username" : u"user",
+            u"broadcast" : u"192.168.1.1"
         }
     }
     runner = CliRunner()
@@ -64,7 +64,7 @@ def test_list_should_return_machines(jsonload):
 
 @patch('json.load')
 @patch('json.dump')
-def test_list_should_remove_machine(jsondump, jsonload):
+def test_rm_should_remove_machine(jsondump, jsonload):
     jsonload.return_value = {
         "aa:bb:cc:dd:ee:ff" : {
             "hostname" : "host",
