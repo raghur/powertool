@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from  io import open
+from io import open
 import json
 import os
 import re
@@ -13,15 +13,17 @@ from wakeonlan import wol
 
 logger = logging.getLogger(__name__)
 
+
 def save_config(ctx, log, config):
-    logger.debug("In result callback: %s "% ctx)
+    logger.debug("In result callback: %s " % ctx)
     if not ctx:
         return
-    logger.debug("In result callback: %s "% config)
+    logger.debug("In result callback: %s " % config)
     file = os.path.expanduser(config)
     logger.debug("Config updated - writing to file")
     with open(file, "w") as fh:
         json.dump(ctx.obj["config"], fh)
+
 
 @click.group(result_callback=save_config)
 @click.option('-c', '--config', type=click.Path(), default='~/.powertool')
@@ -38,7 +40,7 @@ def main(ctx, log, config):
     """Console script for powertool"""
     coloredlogs.install(level=log)
     logger.debug('filename %s', config)
-    file=createIfNotExists(config)
+    file = createIfNotExists(config)
     with open(file, "r") as fh:
         machines = json.load(fh)
     # logger.debug(ctx, ctx.obj)
@@ -59,14 +61,17 @@ def createIfNotExists(file):
             outhandle.write("{}")
     return file
 
+
 @main.command()
 @click.pass_context
 def list(ctx):
     config = ctx.obj["config"]
     [print("%s@%-20s\t%s\t%s" % (config[k]["username"],
-                              config[k]["hostname"],
-                              k,
-                              config[k]["broadcast"])) for k in config.keys()]
+                                 config[k]["hostname"],
+                                 k,
+                                 config[k]["broadcast"]))
+     for k in config.keys()]
+
 
 def validate_broadcast(ctx, param, value):
     logger.debug("In validate_broadcast: %s" % value)
@@ -74,22 +79,26 @@ def validate_broadcast(ctx, param, value):
         raise click.BadParameter("broadcast needs to be an IP address")
     return value
 
+
 def validate_mac(ctx, param, value):
     if not value:
         return
     logger.debug("In validate_mac: %s" % value)
-    if not re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}",value):
+    if not re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}", value):
         raise click.BadParameter("broadcast needs to be a mac address")
     return value
+
 
 def validate_userhost(ctx, param, value):
     if value.find("@") == -1:
         raise click.BadArgumentUsage("host must be in user@host form")
     u, h = value.split('@')
     if u and h:
-        return (u,h)
+        return (u, h)
     else:
         raise click.BadArgumentUsage("host must be in user@host form")
+
+
 @main.command()
 @click.option("-b", "--broadcast",
               default="192.168.1.255",
@@ -102,8 +111,9 @@ def register(ctx, broadcast, host, mac):
     machines = ctx.obj["config"]
     machines[mac] = {"hostname": host[1],
                      "username": host[0],
-                     "broadcast":broadcast}
+                     "broadcast": broadcast}
     return ctx
+
 
 @main.command()
 @click.option("-h", "--host", help="hostname of your server")
@@ -114,7 +124,7 @@ def rm(ctx, host, mac):
     if mac:
         config.pop(mac, None)
     else:
-        keysToRemove=[]
+        keysToRemove = []
         for key in config.keys():
             if host == config[key]["hostname"]:
                 keysToRemove += [key]
@@ -122,6 +132,7 @@ def rm(ctx, host, mac):
         for key in keysToRemove:
             config.pop(key)
     return ctx
+
 
 @main.command()
 @click.argument('target', nargs=-1)
@@ -142,7 +153,6 @@ def wake(ctx, target):
         wol.send_magic_packet(mac, ip_address=config[mac]['broadcast'])
 
 
-
 @main.command()
 @click.argument('target', nargs=-1)
 @click.pass_context
@@ -157,6 +167,5 @@ def sleep(ctx, target):
         mac = hostmap[t]
         machine = config[mac]
         prg = ["ssh", "%s@%s" % (machine['username'], t), "sudo pm-suspend"]
-        logger.debug("calling:  %s"% " ".join(prg))
+        logger.debug("calling:  %s" % " ".join(prg))
         Popen(prg)
-
