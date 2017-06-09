@@ -17,6 +17,8 @@ powertool
      :target: https://pyup.io/repos/github/raghur/powertool/
      :alt: Updates
 
+.. image:: https://img.shields.io/pypi/pyversions/powertool.svg
+    :target: https://pypi.python.org/pypi/powertool
 
 Python utility to wake up(wol) and suspend Linux machines remotely
 
