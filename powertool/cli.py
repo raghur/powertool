@@ -147,9 +147,10 @@ def wake(ctx, target):
             logger.warn("No hostname found for %s" % t)
             continue
         mac = hostmap[t]
-        logger.debug("sending magic packet to %s:%s ip:%s" % (t,
-                     mac,
-                     config[mac]['broadcast']))
+        logger.debug("sending magic packet to %s:%s ip:%s"
+                     % (t,
+                        mac,
+                        config[mac]['broadcast']))
         wol.send_magic_packet(mac, ip_address=config[mac]['broadcast'])
 
 
