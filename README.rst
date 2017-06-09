@@ -22,13 +22,13 @@ Python utility to wake up(wol) and suspend Linux machines remotely
 
 
 * Free software: MIT license
-* Documentation: https://powertool.readthedocs.io.
 
 
 Features
 --------
 
 * TODO
+
 
 Credits
 ---------
