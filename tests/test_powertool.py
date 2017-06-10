@@ -8,6 +8,7 @@ test_powertool
 Tests for `powertool` module.
 """
 
+from __future__ import unicode_literals
 import pytest
 
 from contextlib import contextmanager
@@ -15,7 +16,10 @@ from click.testing import CliRunner
 
 from powertool import powertool
 from powertool import cli
-from mock import Mock, MagicMock, patch, mock_open
+try:
+    from unittest.mock import patch, mock_open
+except ImportError:
+    from mock import patch, mock_open
 
 
 @pytest.fixture
@@ -46,22 +50,22 @@ def test_command_line_interface():
 @patch('json.load')
 def test_list_should_return_machines(jsonload):
     jsonload.return_value = {
-        "aa:bb:cc:dd:ee:ff" : {
-            "hostname" : "host",
-            "username" : "user",
-            "broadcast" : "192.168.1.1"
+        "aa:bb:cc:dd:ee:ff": {
+            "hostname": "host",
+            "username": "user",
+            "broadcast": "192.168.1.1"
         }
     }
     runner = CliRunner()
     result = runner.invoke(cli.main, ["list"])
-    assert 'user@host' in result.output
-    assert 'aa:bb:cc:dd:ee:ff' in result.output
-    assert '192.168.1.1' in result.output
+    assert u'user@host' in result.output
+    assert u'aa:bb:cc:dd:ee:ff' in result.output
+    assert u'192.168.1.1' in result.output
 
 
 @patch('json.load')
 @patch('json.dump')
-def test_list_should_remove_machine(jsondump, jsonload):
+def test_rm_should_remove_machine(jsondump, jsonload):
     jsonload.return_value = {
         "aa:bb:cc:dd:ee:ff" : {
             "hostname" : "host",
