@@ -3,8 +3,11 @@ powertool
 =========
 
 
-.. image:: https://img.shields.io/pypi/v/powertool.svg
-        :target: https://pypi.python.org/pypi/powertool
+.. image:: https://coveralls.io/repos/github/raghur/powertool/badge.svg?branch=master
+    :target: https://coveralls.io/github/raghur/powertool?branch=master
+
+.. image:: https://img.shields.io/pypi/v/powertool.svg :target:
+    https://pypi.python.org/pypi/powertool
 
 .. image:: https://img.shields.io/travis/raghur/powertool.svg
         :target: https://travis-ci.org/raghur/powertool
