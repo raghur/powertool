@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 from io import open
 import json
 import os
@@ -63,7 +63,7 @@ def createIfNotExists(file):
 def list(ctx):
     config = ctx.obj["config"]
     for mac, machine in config.items():
-        click.echo(u"%s@%-20s\t%s\t%s" % (machine["username"],
+        click.echo("%s@%-20s\t%s\t%s" % (machine["username"],
                                          machine["hostname"],
                                          mac,
                                          machine["broadcast"]))

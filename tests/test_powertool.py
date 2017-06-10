@@ -8,6 +8,7 @@ test_powertool
 Tests for `powertool` module.
 """
 
+from __future__ import unicode_literals
 import pytest
 
 from contextlib import contextmanager
@@ -49,10 +50,10 @@ def test_command_line_interface():
 @patch('json.load')
 def test_list_should_return_machines(jsonload):
     jsonload.return_value = {
-        u"aa:bb:cc:dd:ee:ff" : {
-            u"hostname" : u"host",
-            u"username" : u"user",
-            u"broadcast" : u"192.168.1.1"
+        "aa:bb:cc:dd:ee:ff": {
+            "hostname": "host",
+            "username": "user",
+            "broadcast": "192.168.1.1"
         }
     }
     runner = CliRunner()
