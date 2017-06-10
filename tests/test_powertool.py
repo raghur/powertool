@@ -36,6 +36,8 @@ def test_content(response):
     """
     # from bs4 import BeautifulSoup
     # assert 'GitHub' in BeautifulSoup(response.content).title.string
+
+
 def test_command_line_interface():
     runner = CliRunner()
     result = runner.invoke(cli.main, {})
@@ -67,15 +69,15 @@ def test_list_should_return_machines(jsonload):
 @patch('json.dump')
 def test_rm_should_remove_machine(jsondump, jsonload):
     jsonload.return_value = {
-        "aa:bb:cc:dd:ee:ff" : {
-            "hostname" : "host",
-            "username" : "user",
-            "broadcast" : "192.168.1.1"
+        "aa:bb:cc:dd:ee:ff": {
+            "hostname": "host",
+            "username": "user",
+            "broadcast": "192.168.1.1"
         },
-        "aa:bb:cc:dd:ee:ee" : {
-            "hostname" : "host2",
-            "username" : "user",
-            "broadcast" : "192.168.1.1"
+        "aa:bb:cc:dd:ee:ee": {
+            "hostname": "host2",
+            "username": "user",
+            "broadcast": "192.168.1.1"
         }
     }
     runner = CliRunner()
@@ -86,3 +88,71 @@ def test_rm_should_remove_machine(jsondump, jsonload):
     args, kwargs = jsondump.call_args
     assert "aa:bb:cc:dd:ee:ff" not in args[0]
     assert "aa:bb:cc:dd:ee:ee" in args[0]
+
+
+@patch('json.load')
+@patch('json.dump')
+def test_register_should_add_machines(jsondump, jsonload):
+    jsonload.return_value = {}
+    runner = CliRunner()
+    mo = mock_open()
+    with patch('powertool.cli.open', mo):
+        runner.invoke(cli.main, ["register",
+                                 "-b",
+                                 "192.168.1.1",
+                                 "aa:bb:cc:dd:ee:ff",
+                                 "user@host"])
+
+    args, kwargs = jsondump.call_args
+    assert "aa:bb:cc:dd:ee:ff" in args[0]
+
+
+@patch('json.load')
+@patch('wakeonlan.wol.send_magic_packet')
+def test_wake_should_send_magic_packet(send_magic_packet, jsonload):
+    jsonload.return_value = {
+        "aa:bb:cc:dd:ee:ff": {
+            "hostname": "host",
+            "username": "user",
+            "broadcast": "192.168.1.1"
+        },
+        "aa:bb:cc:dd:ee:ee": {
+            "hostname": "host2",
+            "username": "user",
+            "broadcast": "192.168.1.1"
+        }
+    }
+    runner = CliRunner()
+    mo = mock_open()
+    with patch('powertool.cli.open', mo):
+        runner.invoke(cli.main, ["wake", "host"])
+
+    args, kwargs = send_magic_packet.call_args
+    print(args)
+    assert args[0] == "aa:bb:cc:dd:ee:ff"
+    assert kwargs['ip_address'] == "192.168.1.1"
+
+
+@patch('json.load')
+@patch('powertool.cli.Popen')
+def test_sleep_should_invoke_ssh_pm_suspend(popen, jsonload):
+    jsonload.return_value = {
+        "aa:bb:cc:dd:ee:ff": {
+            "hostname": "host",
+            "username": "user",
+            "broadcast": "192.168.1.1"
+        },
+        "aa:bb:cc:dd:ee:ee": {
+            "hostname": "host2",
+            "username": "user",
+            "broadcast": "192.168.1.1"
+        }
+    }
+    runner = CliRunner()
+    mo = mock_open()
+    with patch('powertool.cli.open', mo):
+        runner.invoke(cli.main, ["sleep", "host"])
+
+    args, kwargs = popen.call_args
+    print(args)
+    assert " ".join(args[0]) == "ssh user@host sudo pm-suspend"
