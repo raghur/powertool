@@ -11,17 +11,25 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
+    'coloredlogs',
+    'wakeonlan'
     # TODO: put package requirements here
 ]
 
 test_requirements = [
     # TODO: put package test requirements here
+    'pytest',
+    'mock',
+    'coverage',
+    'tox',
+    'flake8'
 ]
 
 setup(
     name='powertool',
-    version='0.1.0',
-    description="Python utility to wake up(wol) and suspend Linux machines remotely",
+    version='0.2.0',
+    description="Python utility to wake up(wol) and suspend "
+    "Linux machines remotely",
     long_description=readme + '\n\n' + history,
     author="Raghu Rajagopalan",
     author_email='raghu.nospam@gmail.com',
