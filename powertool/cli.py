@@ -81,7 +81,7 @@ def validate_mac(ctx, param, value):
         return
     logger.debug("In validate_mac: %s" % value)
     if not re.match(r"([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}", value):
-        raise click.BadParameter("broadcast needs to be a mac address")
+        raise click.BadParameter("mac needs to be a mac address")
     return value
 
 
