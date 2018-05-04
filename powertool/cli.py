@@ -9,7 +9,7 @@ import logging
 import click
 import coloredlogs
 from subprocess import Popen
-from wakeonlan import wol
+import wakeonlan
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +147,7 @@ def wake(ctx, target):
                      % (t,
                         mac,
                         config[mac]['broadcast']))
-        wol.send_magic_packet(mac, ip_address=config[mac]['broadcast'])
+        wakeonlan.send_magic_packet(mac, ip_address=config[mac]['broadcast'])
 
 
 @main.command()
