@@ -9,8 +9,8 @@ powertool
 .. image:: https://img.shields.io/pypi/v/powertool.svg
    :target: https://pypi.python.org/pypi/powertool
 
-.. image:: https://img.shields.io/travis/raghur/powertool.svg
-        :target: https://travis-ci.org/raghur/powertool
+.. image:: https://travis-ci.org/raghur/powertool.svg?branch=master
+    :target: https://travis-ci.org/raghur/powertool
 
 .. image:: https://readthedocs.org/projects/powertool/badge/?version=latest
         :target: https://powertool.readthedocs.io/en/latest/?badge=latest
