@@ -27,7 +27,7 @@ test_requirements = [
 
 setup(
     name='powertool',
-    version='0.2.0',
+    version='0.3.0',
     description="Python utility to wake up(wol) and suspend "
     "Linux machines remotely",
     long_description=readme + '\n\n' + history,
