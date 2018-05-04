@@ -108,7 +108,7 @@ def test_register_should_add_machines(jsondump, jsonload):
 
 
 @patch('json.load')
-@patch('wakeonlan.wol.send_magic_packet')
+@patch('wakeonlan.send_magic_packet')
 def test_wake_should_send_magic_packet(send_magic_packet, jsonload):
     jsonload.return_value = {
         "aa:bb:cc:dd:ee:ff": {
