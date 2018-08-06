@@ -9,13 +9,15 @@ deploy:
     secure: BoLpYQlfT1NVWEWYTrd2YbX5HHZQjIkWPGG8zDlRfCO46vbLiI6bxKPEWbI79xxAduMiC2khpEW4Ek5eZTiL1TdN8n9+piLb4YWvVh3rODkp/+W4WAHnt3KHmY/6rHtmiVHy+b8aFjYBQdarwXlQjCydaEDNCUNhMcCb6dhONns+IlDyqckbzAg+qwRMPOYQdvarx4BN+P17pGm3TRQn3DJAGhS2yeOdCcp8EHhHRDdu31lX+0jXewWo0GLMzfEz48TZNbt7PSVxT19b0KXe//v75/BNa7bMMi72d7UAOY/fM8Ntted4ewn7pa4KyFMopb634Pu8e3Ye/kGG/u2IBFOe/ryEYOb3XorvZAAZnOvIS7NXbL/6NWn3lYc/fcDrfIc9eUHlA/LSAOebe3lxR4I3nS9V4VAmnoasU9628QDA34gfGNdkhUOATsiF9xbynSAyYJLk54zoo2HN9YR1jvAw8qagKwWrSbNWRIi6Wl+UYyqsVFEqOVfrnCQ22U6a13JCyBpP0KJvShPq8PQbWI/lMFeBMRWkMqIWmGP1CwPHW7YK+JM5SjB/FevfXeIm+2rdqSFzM5Fyh9NeDe9rgi0TAXCWAQHnJH4x9as6NlHZYPMLJHr7Sb1p7JCNGWzpIEDH29Dcpq0fN6CCVVPkY1xaaPepPE7RoNLyovcX/Ig=
   provider: pypi
   user: rraghur
-env:
-- TOXENV=py35
-- TOXENV=py34
-- TOXENV=py33
-- TOXENV=py27
-- TOXENV=py26
-install: 
+matrix:
+  include:
+  - python: "2.7"
+    env: TOXENV=py27
+  - python: "3.4"
+    env: TOXENV=py34
+  - python: "3.5"
+    env: TOXENV=py35
+install:
     - pip install -U tox
     - pip install coveralls
 language: python
