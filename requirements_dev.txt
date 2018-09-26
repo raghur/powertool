@@ -1,6 +1,6 @@
 # pip==8.1.2
 bumpversion==0.5.3
-click==6.7
+click==7.0
 # wheel==0.29.0
 watchdog==0.9.0
 flake8==3.5.0
