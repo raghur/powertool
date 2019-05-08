@@ -12,4 +12,4 @@ wakeonlan==1.1.6
 # cryptography==1.7
 # PyYAML==3.11
 pytest==4.4.1
-mock==2.0.0
+mock==3.0.5
