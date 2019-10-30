@@ -5,7 +5,7 @@ click==7.0
 watchdog==0.9.0
 flake8==3.7.9
 tox==3.14.0
-coverage==4.5.3
+coverage==4.5.4
 coloredlogs==10.0
 wakeonlan==1.1.6
 # Sphinx==1.4.8
