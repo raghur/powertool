@@ -4,7 +4,7 @@ click==8.0.1
 # wheel==0.29.0
 watchdog==2.1.5
 flake8==3.9.2
-tox==3.24.0
+tox==3.24.3
 coverage==5.5
 coloredlogs==15.0.1
 wakeonlan==2.0.1
