@@ -3,7 +3,7 @@ bumpversion==0.6.0
 click==8.1.6
 # wheel==0.29.0
 watchdog==3.0.0
-flake8==6.0.0
+flake8==7.1.1
 tox==4.6.4
 coverage==7.2.7
 coloredlogs==15.0.1
